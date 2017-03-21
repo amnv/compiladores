@@ -45,9 +45,13 @@ digit           = [0-9]
 integer         = {digit}+
 alphanumeric    = {letter}|{digit}
 identifier      = {letter}({alphanumeric})*
-whitespace      = [ \n\t\r\f]
-comment         = ["//"(.)*\n] | ["/*" ^*/]
-reserved        = ["boolean"|"class"|"public"|"extends"|"static"|"void"|"main"|"String"|"int"|"while"|"if"|"else"|"return"|"length"|"true"|"false"|"this"|"new"|"System.out.println"]
+whitespace      = [ \t\f] | \r|\n|\r\n
+AnyCharacter    = [^\r\n]
+Comment         = {LineComment} | {DiferentComment}
+LineComment     = "//" {AnyCharacter}* whitespace?
+DiferentComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+
+Reserved        = ["boolean"|"class"|"public"|"extends"|"static"|"void"|"main"|"String"|"int"|"while"|"if"|"else"|"return"|"length"|"true"|"false"|"this"|"new"|"System.out.println"]
 operator        = [&&|<|==|]
 
 
