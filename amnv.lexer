@@ -41,19 +41,21 @@ System.out.println("Quantidade de Identificadores encontrados: "+qtdeID);
  * PADROES NOMEADOS:
  */
 letter          = [A-Za-z]
-digit           = [0-9]
-integer         = {digit}+
-alphanumeric    = {letter}|{digit}
-identifier      = {letter}({alphanumeric})*
+Digit           = [0-9]
+Integer         = {Digit}+
+LitInt          = [1-9]{Digit}*
+alphanumeric    = {letter}|{Digit}
+Identifier      = (!{Reserved}) && ({Underline}|{letter})({alphanumeric}| {Underline})*
+Underline       = '_'
 whitespace      = [ \t\f] | \r|\n|\r\n
 AnyCharacter    = [^\r\n]
-Comment         = {LineComment} | {DiferentComment}
-LineComment     = "//" {AnyCharacter}* whitespace?
-DiferentComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
+Comment         = {LineComment} | {LongComment}
+LineComment     = "//" {AnyCharacter}* {whitespace}?
+LongComment = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 
 Reserved        = ["boolean"|"class"|"public"|"extends"|"static"|"void"|"main"|"String"|"int"|"while"|"if"|"else"|"return"|"length"|"true"|"false"|"this"|"new"|"System.out.println"]
-operator        = [&&|<|==|]
-
+Operator        = "&&" | "<" | "==" | "!=" | "+" | "-" | "*" | "!"
+Delimiter = ";" | "." | "," | "=" | "(" | ")" | "{" | "}" | "[" | "]"
 
 %%
 /**
@@ -61,14 +63,24 @@ operator        = [&&|<|==|]
  */
 and             { System.out.println("Token AND"); }
 or              { System.out.println("Token OR"); }
-"*"             { System.out.println("Token *"); }
-"+"             { System.out.println("Token +"); }
-"-"             { System.out.println("Token -"); }
-"/"             { System.out.println("Token /"); }
-"("             { System.out.println("Token ("); }
-")"             { System.out.println("Token )"); }
-{identifier}    { qtdeID++; System.out.println("Token ID ("+yytext()+")"); }
-{integer}       { System.out.println("Token INT ("+yytext()+")"); }
+/*
+    "*"             { System.out.println("Token *"); }
+    "+"             { System.out.println("Token +"); }
+    "-"             { System.out.println("Token -"); }
+    "/"             { System.out.println("Token /"); }
+    "("             { System.out.println("Token ("); }
+    ")"             { System.out.println("Token )"); }
+*/
+{Identifier}    { qtdeID++; System.out.println("Token ID ("+yytext()+")"); }
+{LitInt}       { System.out.println("Token INT ("+yytext()+")"); }
 {whitespace}    { /* Ignorar whitespace. */ }
 .               { System.out.println("Illegal char, '" + yytext() +
                     "' line: " + yyline + ", column: " + yycolumn); }
+{Comment}       { /*Ignorar Comment*/}
+{Operator}       { System.out.println("Token operador ("+yytext()+") "); }   
+{Reserved} { System.out.println("Token palavras reservadas ("+yytext()+") "); }
+{Delimiter} { System.out.println("Token demilitadores ("+yytext()+") "); }
+
+
+
+outros {throw new RuntimeException("Caractere ilegal! '" + yytext() + "' na linha: " + yyline + ", coluna: " + yycolumn);}
